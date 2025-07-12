@@ -9,13 +9,13 @@ const maps = [
         'Recharge - KOTH',
         'Recharge - Slayer',
         'Streets - Oddball',
-        'Origin - 3 Flag CTF',
+        'Origin - CTF',
         'Solitude - KOTH',
         'Solitude - Slayer',
         'Fortress - Neutral Bomb',
-        'Fortress - 3 Flag CTF',
-        'Forbidden - 3 Flag CTF',
-        'Aquarius - 5 Flag CTF',
+        'Fortress - CTF',
+        'Forbidden - CTF',
+        'Aquarius - CTF',
         'Aquarius - Neutral Bomb',
         'Aquarius - Slayer',
 ]
@@ -74,13 +74,33 @@ export function getRandomMap() {
 
 }
 
-export function getThreeRandomMaps() {
-  const randomMaps = [];
-  while (randomMaps.length < 3) {
-    const randomMap = maps[Math.floor(Math.random() * maps.length)];
-    if (!randomMaps.includes(randomMap)) {
-      randomMaps.push(randomMap);
-    }
+export function getRandomMaps(num, slayerIncluded, uniqueGamemodes) {
+  let availableMaps = maps;
+  if (!slayerIncluded) {
+    availableMaps = maps.filter(map => !map.includes('Slayer'));
   }
-  return `🎮 **Three Random Maps:**\n• ${randomMaps.join('\n• ')}`;
+
+  if (num > availableMaps.length) {
+    return 'THERE ARENT THAT MANY MAPS IN THE MAP POOL YOU TWAT';
+  }
+
+  const randomMaps = [];
+  const usedGamemodes = new Set();
+  while (randomMaps.length < num && availableMaps.length > 0) {
+    const randomMap = availableMaps[Math.floor(Math.random() * availableMaps.length)];
+    const gamemode = randomMap.split('-')[1]?.trim();
+    if (!randomMaps.includes(randomMap)) {
+      if (uniqueGamemodes) {
+        if (gamemode && !usedGamemodes.has(gamemode)) {
+          randomMaps.push(randomMap);
+          usedGamemodes.add(gamemode);
+        }
+      } else {
+        randomMaps.push(randomMap);
+      }
+    }
+    // Remove the map from availableMaps to avoid infinite loop if not enough unique gamemodes
+    availableMaps = availableMaps.filter(m => m !== randomMap);
+  }
+  return `🎮 **${num === 1 ? 'Random Map' : num + ' Random Maps'}:**\n• ${randomMaps.join('\n• ')}`;
 }
