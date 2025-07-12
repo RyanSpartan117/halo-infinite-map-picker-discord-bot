@@ -86,17 +86,26 @@ export function getRandomMaps(num, slayerIncluded, uniqueGamemodes) {
 
   const randomMaps = [];
   const usedGamemodes = new Set();
+  let lastMapName = null;
   while (randomMaps.length < num && availableMaps.length > 0) {
     const randomMap = availableMaps[Math.floor(Math.random() * availableMaps.length)];
-    const gamemode = randomMap.split('-')[1]?.trim();
+    const [mapName, gamemode] = randomMap.split('-').map(s => s.trim());
+    // Ensure not the same map (before hyphen) as previous
+    if (lastMapName && mapName === lastMapName) {
+      // Remove this map from availableMaps and continue
+      availableMaps = availableMaps.filter(m => m !== randomMap);
+      continue;
+    }
     if (!randomMaps.includes(randomMap)) {
       if (uniqueGamemodes) {
         if (gamemode && !usedGamemodes.has(gamemode)) {
           randomMaps.push(randomMap);
           usedGamemodes.add(gamemode);
+          lastMapName = mapName;
         }
       } else {
         randomMaps.push(randomMap);
+        lastMapName = mapName;
       }
     }
     // Remove the map from availableMaps to avoid infinite loop if not enough unique gamemodes
