@@ -129,13 +129,13 @@ export function getRandomMap() {
 //   return `🎮 **${num === 1 ? 'Random Map' : num + ' Random Maps'}:**\n• ${randomMaps.join('\n• ')}`;
 // }
 
-export function getRandomMaps(num, slayerIncluded, uniqueGamemodes, uniqueMaps) {
+export function getRandomMaps(mapCount, slayerIncluded, uniqueGamemodes, uniqueMaps) {
   let availableMaps = maps;
   if (!slayerIncluded) {
     availableMaps = maps.filter(map => !map.includes('Slayer'));
   }
 
-  if (num > availableMaps.length) {
+  if (mapCount > availableMaps.length) {
     return 'THERE ARENT THAT MANY MAPS IN THE MAP POOL YOU TWAT';
   }
 
@@ -143,7 +143,7 @@ export function getRandomMaps(num, slayerIncluded, uniqueGamemodes, uniqueMaps) 
   const usedGamemodes = new Set();
   const usedMapNames = new Set();
   let lastMapName = null;
-  while (randomMaps.length < num && availableMaps.length > 0) {
+  while (randomMaps.length < mapCount && availableMaps.length > 0) {
     const randomMap = availableMaps[Math.floor(Math.random() * availableMaps.length)];
     const [mapName, gamemode] = randomMap.split('-').map(s => s.trim());
     // Unique maps: never select the same map (before hyphen) twice
@@ -180,5 +180,5 @@ export function getRandomMaps(num, slayerIncluded, uniqueGamemodes, uniqueMaps) 
     return `Not enough unique maps available. Requested ${mapCount}, but only found ${randomMaps.length}.`;
   }
 
-  return `🎮 **${num === 1 ? 'Random Map' : num + ' Random Maps'}:**\n• ${randomMaps.join('\n• ')}`;
+  return `🎮 **${mapCount === 1 ? 'Random Map' : mapCount + ' Random Maps'}:**\n• ${randomMaps.join('\n• ')}`;
 }
