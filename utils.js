@@ -175,5 +175,10 @@ export function getRandomMaps(num, slayerIncluded, uniqueGamemodes, uniqueMaps) 
     }
     availableMaps = availableMaps.filter(m => m !== randomMap);
   }
+
+  if (mapCount > randomMaps.length) {
+    return `Not enough unique maps available. Requested ${mapCount}, but only found ${randomMaps.length}.`;
+  }
+
   return `🎮 **${num === 1 ? 'Random Map' : num + ' Random Maps'}:**\n• ${randomMaps.join('\n• ')}`;
 }
