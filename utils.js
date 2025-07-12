@@ -74,42 +74,106 @@ export function getRandomMap() {
 
 }
 
-export function getRandomMaps(num, slayerIncluded, uniqueGamemodes) {
+export function getRandomMaps(num, slayerIncluded, uniqueGamemodes, uniqueMaps) {
   let availableMaps = maps;
   if (!slayerIncluded) {
-    availableMaps = maps.filter(map => !map.includes('Slayer'));
+    availableMaps = availableMaps.filter(map => !map.includes('Slayer'));
+  }
+
+  // Filter for unique maps if needed
+  if (uniqueMaps) {
+    const seen = new Set();
+    availableMaps = availableMaps.filter(map => {
+      const mapName = map.split('-')[0].trim();
+      if (seen.has(mapName)) return false;
+      seen.add(mapName);
+      return true;
+    });
+  }
+
+  // Filter for unique gamemodes if needed
+  if (uniqueGamemodes) {
+    const seen = new Set();
+    availableMaps = availableMaps.filter(map => {
+      const gamemode = map.split('-')[1]?.trim();
+      if (!gamemode) return false;
+      if (seen.has(gamemode)) return false;
+      seen.add(gamemode);
+      return true;
+    });
   }
 
   if (num > availableMaps.length) {
     return 'THERE ARENT THAT MANY MAPS IN THE MAP POOL YOU TWAT';
   }
 
-  const randomMaps = [];
-  const usedGamemodes = new Set();
-  let lastMapName = null;
-  while (randomMaps.length < num && availableMaps.length > 0) {
-    const randomMap = availableMaps[Math.floor(Math.random() * availableMaps.length)];
-    const [mapName, gamemode] = randomMap.split('-').map(s => s.trim());
-    // Ensure not the same map (before hyphen) as previous
-    if (lastMapName && mapName === lastMapName) {
-      // Remove this map from availableMaps and continue
-      availableMaps = availableMaps.filter(m => m !== randomMap);
-      continue;
-    }
-    if (!randomMaps.includes(randomMap)) {
-      if (uniqueGamemodes) {
-        if (gamemode && !usedGamemodes.has(gamemode)) {
-          randomMaps.push(randomMap);
-          usedGamemodes.add(gamemode);
-          lastMapName = mapName;
-        }
-      } else {
-        randomMaps.push(randomMap);
-        lastMapName = mapName;
-      }
-    }
-    // Remove the map from availableMaps to avoid infinite loop if not enough unique gamemodes
-    availableMaps = availableMaps.filter(m => m !== randomMap);
+  // Shuffle availableMaps
+  const shuffled = availableMaps.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
+
+  const randomMaps = [];
+  let lastMapName = null;
+  for (let i = 0; i < shuffled.length && randomMaps.length < num; i++) {
+    const map = shuffled[i];
+    const mapName = map.split('-')[0].trim();
+    if (!uniqueMaps && lastMapName && mapName === lastMapName) {
+      continue; // skip if same map as previous
+    }
+    randomMaps.push(map);
+    lastMapName = mapName;
+  }
+
   return `🎮 **${num === 1 ? 'Random Map' : num + ' Random Maps'}:**\n• ${randomMaps.join('\n• ')}`;
 }
+
+// export function getRandomMaps(num, slayerIncluded, uniqueGamemodes, uniqueMaps) {
+//   let availableMaps = maps;
+//   if (!slayerIncluded) {
+//     availableMaps = maps.filter(map => !map.includes('Slayer'));
+//   }
+
+//   if (num > availableMaps.length) {
+//     return 'THERE ARENT THAT MANY MAPS IN THE MAP POOL YOU TWAT';
+//   }
+
+//   const randomMaps = [];
+//   const usedGamemodes = new Set();
+//   const usedMapNames = new Set();
+//   let lastMapName = null;
+//   while (randomMaps.length < num && availableMaps.length > 0) {
+//     const randomMap = availableMaps[Math.floor(Math.random() * availableMaps.length)];
+//     const [mapName, gamemode] = randomMap.split('-').map(s => s.trim());
+//     // Unique maps: never select the same map (before hyphen) twice
+//     if (uniqueMaps) {
+//       if (usedMapNames.has(mapName)) {
+//         availableMaps = availableMaps.filter(m => m !== randomMap);
+//         continue;
+//       }
+//     } else {
+//       // Not unique: still don't allow the same map twice in a row
+//       if (lastMapName && mapName === lastMapName) {
+//         availableMaps = availableMaps.filter(m => m !== randomMap);
+//         continue;
+//       }
+//     }
+//     if (!randomMaps.includes(randomMap)) {
+//       if (uniqueGamemodes) {
+//         if (gamemode && !usedGamemodes.has(gamemode)) {
+//           randomMaps.push(randomMap);
+//           usedGamemodes.add(gamemode);
+//           usedMapNames.add(mapName);
+//           lastMapName = mapName;
+//         }
+//       } else {
+//         randomMaps.push(randomMap);
+//         usedMapNames.add(mapName);
+//         lastMapName = mapName;
+//       }
+//     }
+//     availableMaps = availableMaps.filter(m => m !== randomMap);
+//   }
+//   return `🎮 **${num === 1 ? 'Random Map' : num + ' Random Maps'}:**\n• ${randomMaps.join('\n• ')}`;
+// }

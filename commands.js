@@ -52,14 +52,20 @@ const BESTOF = {
     },
     {
       type: 5, // boolean
+      name: 'include_slayer',
+      description: 'Include Slayer maps (default: false)',
+      required: false,
+    },
+    {
+      type: 5, // boolean
       name: 'unique_gamemodes',
       description: 'Choose if you dont want duplicate gamemodes in this series (default: true)',
       required: false,
     },
     {
       type: 5, // boolean
-      name: 'include_slayer',
-      description: 'Include Slayer maps (default: false)',
+      name: 'unique_maps',
+      description: 'Choose if you want completely unique maps in this series (default: false)',
       required: false,
     },
   ]

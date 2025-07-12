@@ -97,6 +97,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
       const mapCountOpt = data.options?.find(option => option.name === 'map_count').value;
       const slayerIncluded = data.options?.find(o => o.name === 'include_slayer')?.value ?? false;
       const uniqueGamemodes = data.options?.find(o => o.name === 'unique_gamemodes')?.value ?? true;
+      const uniqueMaps = data.options?.find(o => o.name === 'unique_maps')?.value ?? false;
 
       // "map" command
       // Send a message into the channel where command was triggered from
@@ -107,7 +108,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
           components: [
             {
               type: MessageComponentTypes.TEXT_DISPLAY,
-              content: getRandomMaps(mapCountOpt, slayerIncluded, uniqueGamemodes), // Pass true to include Slayer maps
+              content: getRandomMaps(mapCountOpt, slayerIncluded, uniqueGamemodes, uniqueMaps), // Pass true to include Slayer maps
             }
           ]
         },
