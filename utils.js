@@ -8,6 +8,7 @@ const maps = [
         'Recharge   - Oddball',
         'Recharge   - KOTH',
         'Recharge   - Slayer',
+        'Streets'   - 'Slayer',
         'Streets    - Oddball',
         'Origin     - CTF',
         'Solitude   - KOTH',
