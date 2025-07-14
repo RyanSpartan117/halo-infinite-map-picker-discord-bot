@@ -67,7 +67,7 @@ export function capitalize(str) {
 }
 
 export function mapList() {
-  return `🗺️ **All Available Maps:**\n• ${maps.join('\n• ')}`;
+  return `🗺️ **All Available Maps:**\n• ${maps.sort().join('\n• ')}`;
 }
 
 export function getRandomMap() {
