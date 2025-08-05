@@ -128,15 +128,54 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
           ]
         },
       });
+    } else if (name === 'bestofchoice') {
+      // Generate three random map/gamemode choices
+      const choices = getRandomMaps(3, false, true, false)
+        .replace(/^🎮.*\n/, '') // Remove the header
+        .split('\n• ') // Split into array
+        .map(s => s.replace(/^• /, '').trim())
+        .filter(Boolean);
+
+      // Build buttons for each choice
+      const buttons = choices.map((choice, idx) => ({
+        type: 2, // Button
+        style: ButtonStyleTypes.PRIMARY,
+        label: choice,
+        custom_id: `bestofchoice_${idx}`
+      }));
+
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: 'Pick your choice:',
+          components: [
+            {
+              type: 1, // Action Row
+              components: buttons
+            }
+          ]
+        }
+      });
     }
-
-    console.error(`unknown command: ${name}`);
-    return res.status(400).json({ error: 'unknown command' });
-  }
-
-  console.error('unknown interaction type', type);
-  return res.status(400).json({ error: 'unknown interaction type' });
+    // Handle button interactions
+  } 
+  console.error(`unknown command: ${data?.name || type}`);
+  return res.status(400).json({ error: 'unknown command' });
 });
+
+if (type === InteractionType.MESSAGE_COMPONENT) {
+    const { custom_id } = data;
+    if (custom_id && custom_id.startsWith('bestofchoice_')) {
+      // Respond to button press
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `You picked: ${req.body.message.components[0].components.find(btn => btn.custom_id === custom_id).label}`,
+          flags: InteractionResponseFlags.EPHEMERAL
+        }
+      });
+    }
+  }
 
 app.listen(PORT, () => {
   console.log('Listening on port', PORT);
