@@ -77,41 +77,6 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
           ]
         },
       });
-      const user = req.body.member?.user || req.body.user;
-      if (user.username === 'zmeatsyyy') {
-        return res.send({
-          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            flags: InteractionResponseFlags.IS_COMPONENTS_V2,
-            components: [
-              {
-                type: MessageComponentTypes.TEXT_DISPLAY,
-                content: `Origin - 3 Flag CTF\nOrigin - 3 Flag CTF\nOrigin - 3 Flag CTF\nOrigin - 3 Flag CTF\nOrigin - 3 Flag CTF\n`, // Pass true to include Slayer maps
-              }
-            ]
-          },
-        });
-      }
-
-      const mapCountOpt = data.options?.find(option => option.name === 'map_count').value;
-      const slayerIncluded = data.options?.find(o => o.name === 'include_slayer')?.value ?? false;
-      const uniqueGamemodes = data.options?.find(o => o.name === 'unique_gamemodes')?.value ?? true;
-      const uniqueMaps = data.options?.find(o => o.name === 'unique_maps')?.value ?? false;
-
-      // "map" command
-      // Send a message into the channel where command was triggered from
-      return res.send({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          flags: InteractionResponseFlags.IS_COMPONENTS_V2,
-          components: [
-            {
-              type: MessageComponentTypes.TEXT_DISPLAY,
-              content: getRandomMaps(mapCountOpt, slayerIncluded, uniqueGamemodes, uniqueMaps), // Pass true to include Slayer maps
-            }
-          ]
-        },
-      });
     } else if (name === 'maplist') {
       // "map" command
       // Send a message into the channel where command was triggered from
